@@ -1,0 +1,22 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Private keys and credentials
+*.pem
+*.key
+*.keystore
+*.seed
+mnemonic.txt
+private-key.txt
+
+# System files
+desktop.ini
+.DS_Store
+Thumbs.db

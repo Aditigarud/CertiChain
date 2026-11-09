@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CertiChain | Academic Certificate Verification</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">C</div>
+        <div><strong>CertiChain</strong><span>ACADEMIC TRUST</span></div>
+      </div>
+      <div class="sidebar-label">WORKSPACE</div>
+      <button class="nav-item active" data-view="verify"><span>⌕</span> Verify certificate</button>
+      <button class="nav-item" data-view="issue"><span>＋</span> Issue certificate</button>
+      <button class="nav-item" data-view="admin"><span>♙</span> Issuer management</button>
+      <div class="sidebar-bottom">
+        <div class="network-dot"></div>
+        <div><strong>Local blockchain</strong><small>Ganache · Chain 1337</small></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">ACADEMIC CREDENTIALS</div>
+          <h1 id="page-title">Verify a certificate</h1>
+          <p id="page-subtitle">Check a certificate's authenticity against the blockchain record.</p>
+        </div>
+        <button id="connect-wallet" class="button button-primary">Connect MetaMask</button>
+      </header>
+
+      <div id="notice" class="notice hidden" role="status"></div>
+      <div class="wallet-strip">
+        <div class="wallet-icon">◇</div>
+        <div class="wallet-copy"><strong id="wallet-status">Wallet not connected</strong><span
+            id="wallet-address">Connect MetaMask to interact with the local blockchain.</span></div>
+        <span id="network-badge" class="badge badge-muted">Not connected</span>
+      </div>
+
+      <section class="view active" id="view-verify">
+        <div class="content-grid">
+          <div class="panel main-panel">
+            <div class="panel-heading">
+              <div><span class="step-tag">01</span>
+                <h2>Verify credentials</h2>
+              </div><span class="subtle-icon">✓</span>
+            </div>
+            <p class="muted">Upload the original certificate file and enter the certificate ID provided by the
+              institution.</p>
+            <form id="verify-form" novalidates>
+              <label for="verify-id">Certificate ID</label>
+              <input id="verify-id" type="text" placeholder="e.g. CRCE-2026-001" required />
+              <label>Certificate document</label>
+              <label for="verify-file" class="dropzone" id="verify-dropzone">
+                <span class="upload-symbol">↑</span>
+                <strong id="verify-file-name">Choose a certificate file</strong>
+                <small>PDF or other original file · up to 20 MB</small>
+                <input id="verify-file" type="file" required />
+              </label>
+              <button class="button button-primary button-full" type="submit">Verify certificate <span>→</span></button>
+            </form>
+            <div class="privacy-note"><span>▣</span>
+              <p>Your document is hashed in your browser. The file itself is not uploaded to the blockchain.</p>
+            </div>
+          </div>
+          <div class="panel info-panel">
+            <div class="info-icon">✳</div>
+            <h2>What gets checked?</h2>
+            <div class="info-row"><span class="number">1</span>
+              <div><strong>Certificate ID</strong>
+                <p>Finds the certificate record stored on-chain.</p>
+              </div>
+            </div>
+            <div class="info-row"><span class="number">2</span>
+              <div><strong>Document hash</strong>
+                <p>Compares the file's SHA-256 hash with the registered hash.</p>
+              </div>
+            </div>
+            <div class="info-row"><span class="number">3</span>
+              <div><strong>Revocation status</strong>
+                <p>Checks whether the issuing institution has revoked it.</p>
+              </div>
+            </div>
+            <div class="info-footer">A matching hash confirms the uploaded file matches the registered file. It does not
+              independently confirm the institution's real-world legitimacy.</div>
+          </div>
+        </div>
+        <div id="verify-result" class="panel result-panel hidden"></div>
+      </section>
+
+      <section class="view" id="view-issue">
+        <div class="panel form-panel">
+          <div class="panel-heading">
+            <div><span class="step-tag">02</span>
+              <h2>Issue a certificate</h2>
+            </div><span class="badge badge-blue">Authorized issuer only</span>
+          </div>
+          <p class="muted">Register a certificate's ID and document hash on Ganache. The connected wallet must be
+            authorized as an issuer.</p>
+          <form id="issue-form" novalidate>
+            <label for="issue-id">Certificate ID</label>
+            <input id="issue-id" type="text" placeholder="e.g. CRCE-2026-001" required />
+            <label>Certificate document</label>
+            <label for="issue-file" class="dropzone">
+              <span class="upload-symbol">↑</span>
+              <strong id="issue-file-name">Choose the certificate file</strong>
+              <small>The same original file will be needed for verification</small>
+              <input id="issue-file" type="file" required />
+            </label>
+            <div class="callout"><strong>Important</strong>
+              <p>Keep the certificate ID and original file safe. Even a small change to the file creates a different
+                hash.</p>
+            </div>
+            <button class="button button-primary" type="submit">Register on blockchain <span>→</span></button>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" id="view-admin">
+        <div class="panel form-panel">
+          <div class="panel-heading">
+            <div><span class="step-tag">03</span>
+              <h2>Issuer management</h2>
+            </div><span class="badge badge-amber">Admin only</span>
+          </div>
+          <p class="muted">Authorize institution wallet addresses or remove an issuer's permission. Only the contract
+            admin can perform these actions.</p>
+          <div class="admin-check"><span class="admin-check-icon">◇</span>
+            <div><strong>Connected wallet role</strong>
+              <p id="role-status">Connect your wallet to check whether it is the contract admin or an authorized issuer.
+              </p>
+            </div>
+          </div>
+          <form id="issuer-form" novalidate>
+            <label for="issuer-address">Institution wallet address</label>
+            <input id="issuer-address" type="text" placeholder="0x..." required />
+            <div class="button-row">
+              <button class="button button-primary" type="submit" name="action" value="authorize">Authorize
+                issuer</button>
+              <button class="button button-secondary" type="button" id="remove-issuer">Remove issuer</button>
+            </div>
+          </form>
+          <button class="button button-secondary" id="refresh-role" type="button">Refresh wallet permissions</button>
+        </div>
+      </section>
+
+      <footer><span>CertiChain</span><span>Powered by Ethereum-compatible smart contracts · Local development</span>
+      </footer>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
